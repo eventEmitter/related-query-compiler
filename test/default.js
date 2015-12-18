@@ -18,6 +18,15 @@
         });
 
 
+        it('should stringify input correctly', function() {
+            assert.equal(new VendorCompiler().stringify(1), '1');
+            assert.equal(new VendorCompiler().stringify('2'), '2');
+            assert.equal(new VendorCompiler().stringify(true), 'true');
+            assert.equal(new VendorCompiler().stringify({toJSON: function() {return {a: 3}}}), '{"a":3}');
+            assert.equal(new VendorCompiler().stringify({toString: function() {return '4'}}), '4');
+            assert.equal(new VendorCompiler().stringify({}), '[object Object]');
+        });
+
 
         it('should compile a native module', function(done) {
             let context = new QueryContext({ast: {
