@@ -18,16 +18,6 @@
         });
 
 
-        it('should stringify input correctly', function() {
-            assert.equal(new VendorCompiler().stringify(1), '1');
-            assert.equal(new VendorCompiler().stringify('2'), '2');
-            assert.equal(new VendorCompiler().stringify(true), 'true');
-            assert.equal(new VendorCompiler().stringify({toJSON: function() {return {a: 3}}}), '{"a":3}');
-            assert.equal(new VendorCompiler().stringify({toString: function() {return '4'}}), '4');
-            assert.equal(new VendorCompiler().stringify({}), '[object Object]');
-        });
-
-
         it('should compile a native module', function(done) {
             let context = new QueryContext({ast: {
                   kind: 'createDatabase'
@@ -125,4 +115,236 @@
             }).catch(done);
         });
     });
+
+
+
+
+
+
+
+    describe('Type Serialization', function(){
+        it('string', function(done) {
+            let context = new QueryContext({ast: {
+                  kind: 'value'
+                , value: 'test'
+            }});
+
+            new VendorCompiler().compile(context).then(() => {
+                assert.equal(context.sql, `'test'`);
+                done();
+            }).catch(done);
+        });
+
+
+        it('number', function(done) {
+            let context = new QueryContext({ast: {
+                  kind: 'value'
+                , value: 1
+            }});
+
+            new VendorCompiler().compile(context).then(() => {
+                assert.equal(context.sql, `'1'`);
+                done();
+            }).catch(done);
+        });
+
+
+        it('boolean', function(done) {
+            let context = new QueryContext({ast: {
+                  kind: 'value'
+                , value: true
+            }});
+
+            new VendorCompiler().compile(context).then(() => {
+                assert.equal(context.sql, `'true'`);
+                done();
+            }).catch(done);
+        });
+
+
+        it('array', function(done) {
+            let context = new QueryContext({ast: {
+                  kind: 'value'
+                , value: [1, false, 'hi']
+            }});
+
+            new VendorCompiler().compile(context).then(() => {
+                assert.equal(context.sql, `{'1', 'false', 'hi'}`);
+                done();
+            }).catch(done);
+        });
+
+
+        it('Int8Array', function(done) {
+            let context = new QueryContext({ast: {
+                  kind: 'value'
+                , value: new Int8Array(3)
+            }});
+
+            new VendorCompiler().compile(context).then(() => {
+                assert.equal(context.sql, `{'0', '0', '0'}`);
+                done();
+            }).catch(done);
+        });
+
+
+        it('Float32Array', function(done) {
+            let context = new QueryContext({ast: {
+                  kind: 'value'
+                , value: new Float32Array(3)
+            }});
+
+            new VendorCompiler().compile(context).then(() => {
+                assert.equal(context.sql, `{'0', '0', '0'}`);
+                done();
+            }).catch(done);
+        });
+
+
+        it('object', function(done) {
+            let context = new QueryContext({ast: {
+                  kind: 'value'
+                , value: {a:1}
+            }});
+
+            new VendorCompiler().compile(context).then(() => {
+                assert.equal(context.sql, `'{"a":1}'`);
+                done();
+            }).catch(done);
+        });
+
+
+        it('Symbol', function(done) {
+            let context = new QueryContext({ast: {
+                  kind: 'value'
+                , value: Symbol('fb')
+            }});
+
+            new VendorCompiler().compile(context).then(() => {
+                assert.equal(context.sql, `'Symbol(fb)'`);
+                done();
+            }).catch(done);
+        });
+
+
+        it('Date', function(done) {
+            let context = new QueryContext({ast: {
+                  kind: 'value'
+                , value: new Date(Date.UTC(1983, 9, 2, 7, 30, 28))
+            }});
+
+            new VendorCompiler().compile(context).then(() => {
+                assert.equal(context.sql, `'1983-10-02T07:30:28.000Z'`);
+                done();
+            }).catch(done);
+        });
+
+
+        it('RegExp', function(done) {
+            let context = new QueryContext({ast: {
+                  kind: 'value'
+                , value: /so-what/gi
+            }});
+
+            new VendorCompiler().compile(context).then(() => {
+                assert.equal(context.sql, `'/so-what/gi'`);
+                done();
+            }).catch(done);
+        });
+
+
+        it('Error', function(done) {
+            let context = new QueryContext({ast: {
+                  kind: 'value'
+                , value: new Error('not good!')
+            }});
+
+            new VendorCompiler().compile(context).then(() => {
+                assert.equal(context.sql, `'Error: not good!'`);
+                done();
+            }).catch(done);
+        });
+
+
+        it('Null', function(done) {
+            let context = new QueryContext({ast: {
+                  kind: 'value'
+                , value: null
+            }});
+
+            new VendorCompiler().compile(context).then(() => {
+                assert.equal(context.sql, `NULL`);
+                done();
+            }).catch(done);
+        });
+
+
+        it('Undefined', function(done) {
+            let context = new QueryContext({ast: {
+                  kind: 'value'
+                , value: undefined
+            }});
+
+            new VendorCompiler().compile(context).then(() => {
+                assert.equal(context.sql, `NULL`);
+                done();
+            }).catch(done);
+        });
+
+
+        it('Buffer', function(done) {
+            let context = new QueryContext({ast: {
+                  kind: 'value'
+                , value: new Buffer(3)
+            }});
+
+            new VendorCompiler().compile(context).then(() => {
+                assert.equal(context.sql, `'\\x000000'`);
+                done();
+            }).catch(done);
+        });
+
+
+        it('Map', function(done) {
+            let map = new Map();
+            map.set(1, 'a');
+            map.set('b', 2)
+
+            let context = new QueryContext({ast: {
+                  kind: 'value'
+                , value: map
+            }});
+
+            new VendorCompiler().compile(context).then(() => {
+                assert.equal(context.sql, `'{"1":"a","b":2}'`);
+                done();
+            }).catch(done);
+        });
+
+
+        it('Set', function(done) {
+            let set = new Set();
+            set.add(1);
+            set.add('b')
+
+            let context = new QueryContext({ast: {
+                  kind: 'value'
+                , value: set
+            }});
+
+            new VendorCompiler().compile(context).then(() => {
+                assert.equal(context.sql, `{'1', 'b'}`);
+                done();
+            }).catch(done);
+        });
+    });
+
+
+
+
+
+
+
+
+
 })();
