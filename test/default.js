@@ -64,11 +64,11 @@
         it('select', function(done) {
             let context = new QueryContext({ast: {
                   kind: 'select'
-                , selection: ['id', 'c', 'id', 'b']
+                , selection: ['id', 'c', 'id', 'b', '*']
             }});
 
             new VendorCompiler().compile(context).then(() => {
-                assert.equal('SELECT "id", "c", "b"', context.sql);
+                assert.equal('SELECT "id", "c", "b", *', context.sql);
                 done();
             }).catch(done);
         });
@@ -120,7 +120,7 @@
             }});
 
             new VendorCompiler().compile(context).then(() => {
-                assert.equal(`SELECT "*" FROM "doSomethingUseful"('a', '1');`, context.sql);
+                assert.equal(`SELECT * FROM "doSomethingUseful"('a', '1')`, context.sql);
                 done();
             }).catch(done);
         });

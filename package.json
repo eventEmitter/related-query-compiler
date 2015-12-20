@@ -1,7 +1,7 @@
 {
       "name"                        : "related-query-compiler"
     , "description"                 : "Query compiler infrastructure for the related ORM"
-    , "version"                     : "0.1.2"
+    , "version"                     : "0.1.3"
     , "homepage"                    : "https://github.com/eventEmitter/related-query-compiler"
     , "author"                      : "Michael van der Weg <michael@joinbox.com> (http://joinbox.com/)"
     , "license"                     : "MIT"
@@ -19,7 +19,6 @@
           "ee-class"                : "1.x"
         , "ee-types"                : "1.x"
         , "ee-log"                  : "0.3.x"
-        , "ee-event-emitter"        : "0.3.x"
     }
     , "devDependencies": {
           "mocha"                   : "2.x"
