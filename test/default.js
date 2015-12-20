@@ -295,11 +295,11 @@
         it('Buffer', function(done) {
             let context = new QueryContext({ast: {
                   kind: 'value'
-                , value: new Buffer(3)
+                , value: new Buffer('abc')
             }});
 
             new VendorCompiler().compile(context).then(() => {
-                assert.equal(context.sql, `'\\x000000'`);
+                assert.equal(context.sql, `'\\x616263'`);
                 done();
             }).catch(done);
         });
