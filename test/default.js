@@ -92,6 +92,23 @@
         });
 
 
+
+
+        it('functionQuery', function(done) {
+            let context = new QueryContext({ast: {
+                  kind: 'functionQuery'
+                , name: 'doSomethingUseful'
+                , database: 'testDatabase'
+                , parameters: ['a', 1]
+            }});
+
+            new VendorCompiler().compile(context).then(() => {
+                assert.equal(`SELECT * FROM "testDatabase"."doSomethingUseful"('a', '1')`, context.sql);
+                done();
+            }).catch(done);
+        });
+
+
         it('selectQuery', function(done) {
             let context = new QueryContext({ast: {
                   kind: 'selectQuery'
