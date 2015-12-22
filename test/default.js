@@ -364,4 +364,33 @@
 
 
 
+
+    describe('Native Processors', function(){
+        
+        it('functionQuery', function(done) {
+            let context = new QueryContext({ast: {
+                kind: 'functionQuery'
+            }});
+
+            new VendorCompiler().process(context, [{a:1}]).then((data) => {
+                assert.deepEqual(data, [{a:1}]);
+                done();
+            }).catch(done);
+        });
+
+
+        it('selectQuery', function(done) {
+            let context = new QueryContext({ast: {
+                kind: 'selectQuery'
+            }});
+
+            new VendorCompiler().process(context, {rows: [{a:1}]}).then((data) => {
+                assert.deepEqual(data, [{a:1}]);
+                done();
+            }).catch(done);
+        });
+    });
+
+
+
 })();
